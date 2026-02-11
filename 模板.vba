@@ -14,7 +14,7 @@ Private Sub Worksheet_Change(ByVal Target As Range)
     On Error Resume Next
     Application.EnableEvents = False
     
-    ' 🆕 检查是否是 R3 单元格被修改（生产批号）
+    ' ?? 检查是否是 R3 单元格被修改（生产批号）
     If Not Intersect(Target, Me.Range("R3")) Is Nothing Then
         Call QueryProductionHistory
     End If
@@ -29,7 +29,7 @@ Private Sub Worksheet_Change(ByVal Target As Range)
         Call CalculateRequirements
     End If
     
-    ' 🆕 检查是否是 E列（需求量）被修改，同步到M列（入库）
+    ' ?? 检查是否是 E列（需求量）被修改，同步到M列（入库）
     Dim colRequirement As Long
     colRequirement = 5  ' E列
     
@@ -213,7 +213,7 @@ Sub FillBOMData()
                 bomData(i, 6) = wsData.Cells(dataRow, colUnit).Value
             End If
             
-            ' G列：车间结存量 - 🆕 从车间结存表获取
+            ' G列：车间结存量 - ?? 从车间结存表获取
             Dim workshopStock As Double
             Dim materialCodeForStock As String
             If colMaterialCode > 0 Then
@@ -496,7 +496,7 @@ SkipFormulaFill:
                         wsTemplate.Cells(5 + i, 5).Value = requirementQty  ' E列：需求量
                     End If
                     
-                    ' 🆕 M列（入库）默认等于E列（需求量）
+                    ' ?? M列（入库）默认等于E列（需求量）
                     wsTemplate.Cells(5 + i, 13).Value = requirementQty  ' M列：入库
                 Next i
             End If
@@ -1139,7 +1139,7 @@ Sub AllocateBatchesFIFO(materialCode As String, needOutbound As Double, specQty 
                 colOutStock = GetColumnIndex(wsOutbound, 1, "实时库存")
                 colOutProductionBatch = GetColumnIndex(wsOutbound, 1, "生产批号")
 
-                ' 🆕 获取模板表I3的生产批号
+                ' ?? 获取模板表I3的生产批号
                 Dim productionBatchNumber As String
                 productionBatchNumber = Trim(wsTemplate.Range("I3").Value)
 
@@ -1154,7 +1154,7 @@ Sub AllocateBatchesFIFO(materialCode As String, needOutbound As Double, specQty 
                 If colOutBatch > 0 Then wsOutbound.Cells(outboundLastRow, colOutBatch).Value = batchNumber
                 If colOutQty > 0 Then wsOutbound.Cells(outboundLastRow, colOutQty).Value = thisOutbound
                 If colOutAuxQty > 0 And specQty > 0 Then wsOutbound.Cells(outboundLastRow, colOutAuxQty).Value = thisOutbound / specQty
-                ' 🆕 写入生产批号
+                ' ?? 写入生产批号
                 If colOutProductionBatch > 0 Then wsOutbound.Cells(outboundLastRow, colOutProductionBatch).Value = productionBatchNumber
 
                 ' 更新入库表
@@ -1168,7 +1168,7 @@ Sub AllocateBatchesFIFO(materialCode As String, needOutbound As Double, specQty 
                 ' 写入出库后的实时库存
                 If colOutStock > 0 Then wsOutbound.Cells(outboundLastRow, colOutStock).Value = currentBatchStock - thisOutbound
 
-                ' 🆕 计算并写入车间使用量和车间实时结存
+                ' ?? 计算并写入车间使用量和车间实时结存
                 Dim colOutWorkshopUsage As Long
                 Dim colOutWorkshopStock As Long
                 Dim requirement As Double
@@ -1193,7 +1193,7 @@ Sub AllocateBatchesFIFO(materialCode As String, needOutbound As Double, specQty 
                 ' 按出库比例分配车间使用量（使用入库量代替需求量）
                 If totalPickup > 0 Then
                     workshopUsage = (thisOutbound / totalPickup) * (inbound + scrap + inspection)
-                    workshopUsage = Round(workshopUsage, 2)  ' 🆕 四舍五入到2位小数
+                    workshopUsage = Round(workshopUsage, 2)  ' ?? 四舍五入到2位小数
                 Else
                     workshopUsage = 0
                 End If
@@ -1209,7 +1209,7 @@ Sub AllocateBatchesFIFO(materialCode As String, needOutbound As Double, specQty 
                 currentWorkshopStock = Val(wsTemplate.Cells(templateRow, "G").Value)  ' G列：车间结存量
                 
                 workshopStockAfter = currentWorkshopStock + thisOutbound - workshopUsage
-                workshopStockAfter = Round(workshopStockAfter, 2)  ' 🆕 四舍五入到2位小数
+                workshopStockAfter = Round(workshopStockAfter, 2)  ' ?? 四舍五入到2位小数
                 
                 If colOutWorkshopStock > 0 Then
                     wsOutbound.Cells(outboundLastRow, colOutWorkshopStock).Value = workshopStockAfter
@@ -1405,15 +1405,15 @@ Sub FillBatchNumberDisplay(wsTemplate As Worksheet, wsOutbound As Worksheet)
     Dim colOutBatch As Long
     Dim colOutQty As Long
     Dim colOutAuxQty As Long
-    Dim colOutProductionBatch As Long  ' 🆕 生产批号列
-    Dim productionBatch As String      ' 🆕 当前生产批号
+    Dim colOutProductionBatch As Long  ' ?? 生产批号列
+    Dim productionBatch As String      ' ?? 当前生产批号
 
     colOutDate = GetColumnIndex(wsOutbound, 1, "日期")
     colOutMaterialCode = GetColumnIndex(wsOutbound, 1, "物料编号")
     colOutBatch = GetColumnIndex(wsOutbound, 1, "批次")
     colOutQty = GetColumnIndex(wsOutbound, 1, "出库数量")
     colOutAuxQty = GetColumnIndex(wsOutbound, 1, "辅数量")
-    colOutProductionBatch = GetColumnIndex(wsOutbound, 1, "生产批号")  ' 🆕 获取生产批号列索引
+    colOutProductionBatch = GetColumnIndex(wsOutbound, 1, "生产批号")  ' ?? 获取生产批号列索引
 
     If colOutMaterialCode = 0 Or colOutBatch = 0 Or colOutQty = 0 Then
         MsgBox "出库表缺少必需的列（物料编号、批次或出库数量），请检查表头！", vbCritical, "错误"
@@ -1421,7 +1421,7 @@ Sub FillBatchNumberDisplay(wsTemplate As Worksheet, wsOutbound As Worksheet)
     End If
 
     currentDate = Date
-    productionBatch = Trim(wsTemplate.Range("I3").Value)  ' 🆕 读取I3单元格的生产批号
+    productionBatch = Trim(wsTemplate.Range("I3").Value)  ' ?? 读取I3单元格的生产批号
     lastRow = wsTemplate.Cells(wsTemplate.Rows.Count, "B").End(xlUp).Row
     outboundLastRow = wsOutbound.Cells(wsOutbound.Rows.Count, colOutMaterialCode).End(xlUp).Row
 
@@ -1442,7 +1442,7 @@ Sub FillBatchNumberDisplay(wsTemplate As Worksheet, wsOutbound As Worksheet)
 
             ' 从出库表中查找当天该物料的所有批号和数量
             For j = 2 To outboundLastRow  ' 假设第1行是表头
-                ' 🆕 检查日期、物料编号和生产批号是否匹配
+                ' ?? 检查日期、物料编号和生产批号是否匹配
                 If colOutDate > 0 Then
                     ' 增加生产批号筛选条件：只读取当前生产批号的出库记录
                     If wsOutbound.Cells(j, colOutDate).Value = currentDate And _
@@ -1475,7 +1475,7 @@ Sub FillBatchNumberDisplay(wsTemplate As Worksheet, wsOutbound As Worksheet)
                         End If
                     End If
                 Else
-                    ' 🆕 如果没有日期列，匹配物料编号和生产批号
+                    ' ?? 如果没有日期列，匹配物料编号和生产批号
                     If Trim(wsOutbound.Cells(j, colOutMaterialCode).Value) = materialCode And _
                        (colOutProductionBatch = 0 Or productionBatch = "" Or _
                         Trim(wsOutbound.Cells(j, colOutProductionBatch).Value) = productionBatch) Then
@@ -1523,7 +1523,7 @@ ErrorHandler:
 End Sub
 
 ' ============================================
-' 🆕 计算下批结存（O列）
+' ?? 计算下批结存（O列）
 ' 从车间结存表读取实时结存
 ' 创建日期：2026-02-11
 ' 修改日期：2026-02-11 - 简化逻辑，直接读取车间结存表
@@ -1554,7 +1554,7 @@ Sub CalculateNextBatchStock()
         If Not IsEmpty(Me.Cells(i, "B")) Then
             materialCode = Trim(Me.Cells(i, "B").Value)
             
-            ' 🆕 直接调用模块1的GetWorkshopStock函数（该函数会动态计算实时结存）
+            ' ?? 直接调用模块1的GetWorkshopStock函数（该函数会动态计算实时结存）
             realStock = GetWorkshopStock(materialCode)
             
             ' 填写到O列（下次结存）
@@ -1571,7 +1571,7 @@ ErrorHandler:
 End Sub
 
 ' ============================================
-' 🆕 从模板表批量更新车间结存表
+' ?? 从模板表批量更新车间结存表
 ' 创建日期：2026-02-11
 ' ============================================
 Sub UpdateWorkshopStockFromTemplate()
@@ -1619,7 +1619,7 @@ ErrorHandler:
 End Sub
 
 ' ============================================
-' 🆕 反查历史生产批号
+' ?? 反查历史生产批号
 ' 当R3单元格修改时触发
 ' 从生产记录表和生产记录明细表读取数据并填充模板表
 ' 创建日期：2026-02-11
@@ -1648,30 +1648,39 @@ Sub QueryProductionHistory()
     Set wsProductionDetail = ThisWorkbook.Worksheets("生产记录明细")
     Set wsOutbound = ThisWorkbook.Worksheets("出库")
     
-    ' 读取生产批号（反查专用单元格 R3）
-    productionBatch = Trim(CStr(wsTemplate.Range("R3").Value))
+    ' 读取生产批号
+    productionBatch = Trim(wsTemplate.Range("R3").Value)
     
     ' 如果生产批号为空，不执行反查
     If productionBatch = "" Then
-        GoTo CleanUp
+        Exit Sub
     End If
     
     ' 步骤1：从生产记录表查找主记录
-    Dim colProProductCode As Long, colProProductName As Long, colProProductionBatch As Long
-    Dim colProRequirementQty As Long, colProPickupDate As Long, colProProductionDate As Long
-    Dim lastRow As Long, found As Boolean
+    Dim colProDate As Long
+    Dim colProProductCode As Long
+    Dim colProProductName As Long
+    Dim colProProductionBatch As Long
+    Dim colProRequirementQty As Long
+    Dim colProPickupDate As Long
+    Dim colProProductionDate As Long
+    Dim lastRow As Long
+    Dim found As Boolean
     
+    colProDate = GetColumnIndex(wsProduction, 1, "日期")
     colProProductCode = GetColumnIndex(wsProduction, 1, "产品编号")
     colProProductName = GetColumnIndex(wsProduction, 1, "产品名称")
     colProProductionBatch = GetColumnIndex(wsProduction, 1, "生产批号")
     colProRequirementQty = GetColumnIndex(wsProduction, 1, "需求数量")
+    
+    ' 尝试获取领料日期和生产日期列（如果存在）
     On Error Resume Next
     colProPickupDate = GetColumnIndex(wsProduction, 1, "领料日期")
     colProProductionDate = GetColumnIndex(wsProduction, 1, "生产日期")
     On Error GoTo ErrorHandler
     
     If colProProductCode = 0 Or colProProductionBatch = 0 Then
-        MsgBox "生产记录表缺少必需的列（产品编号或生产批号）", vbCritical
+        MsgBox "生产记录表缺少必需的列", vbCritical
         GoTo CleanUp
     End If
     
@@ -1680,39 +1689,33 @@ Sub QueryProductionHistory()
     
     ' 查找匹配的生产批号
     For i = 2 To lastRow
-        Dim vBatch As Variant
-        vBatch = wsProduction.Cells(i, colProProductionBatch).Value
-        If Not IsError(vBatch) Then
-            If Trim(CStr(vBatch)) = productionBatch Then
-                If Not IsError(wsProduction.Cells(i, colProProductCode).Value) Then
-                    productCode = Trim(CStr(wsProduction.Cells(i, colProProductCode).Value))
-                End If
-                If colProProductName > 0 And Not IsError(wsProduction.Cells(i, colProProductName).Value) Then
-                    productName = Trim(CStr(wsProduction.Cells(i, colProProductName).Value))
-                End If
-                If colProRequirementQty > 0 And Not IsError(wsProduction.Cells(i, colProRequirementQty).Value) Then
-                    requirementQty = Val(CStr(wsProduction.Cells(i, colProRequirementQty).Value))
-                End If
-                
-                ' 日期处理
-                Dim vDate As Variant
-                If colProPickupDate > 0 Then
-                    vDate = wsProduction.Cells(i, colProPickupDate).Value
-                    If IsDate(vDate) Then pickupDate = CDate(vDate) Else pickupDate = Date
-                Else
-                    pickupDate = Date
-                End If
-                
-                If colProProductionDate > 0 Then
-                    vDate = wsProduction.Cells(i, colProProductionDate).Value
-                    If IsDate(vDate) Then productionDate = CDate(vDate) Else productionDate = Date + 1
-                Else
-                    productionDate = Date + 1
-                End If
-                
-                found = True
-                Exit For
+        If Trim(wsProduction.Cells(i, colProProductionBatch).Value) = productionBatch Then
+            ' 找到了，读取数据
+            productCode = Trim(wsProduction.Cells(i, colProProductCode).Value)
+            
+            If colProProductName > 0 Then
+                productName = Trim(wsProduction.Cells(i, colProProductName).Value)
             End If
+            
+            If colProRequirementQty > 0 Then
+                requirementQty = Val(wsProduction.Cells(i, colProRequirementQty).Value)
+            End If
+            
+            ' 读取日期
+            If colProPickupDate > 0 And Not IsEmpty(wsProduction.Cells(i, colProPickupDate)) Then
+                pickupDate = CDate(wsProduction.Cells(i, colProPickupDate).Value)
+            Else
+                pickupDate = Date
+            End If
+            
+            If colProProductionDate > 0 And Not IsEmpty(wsProduction.Cells(i, colProProductionDate)) Then
+                productionDate = CDate(wsProduction.Cells(i, colProProductionDate).Value)
+            Else
+                productionDate = Date + 1
+            End If
+            
+            found = True
+            Exit For
         End If
     Next i
     
@@ -1722,28 +1725,42 @@ Sub QueryProductionHistory()
     End If
     
     ' 步骤2：填写模板表主信息
-    wsTemplate.Range("E3").Value = productCode
-    wsTemplate.Range("C3").Value = productName
-    wsTemplate.Range("C4").Value = requirementQty
-    wsTemplate.Range("I4").Value = Format(pickupDate, "yyyy.mm.dd")
-    wsTemplate.Range("E4").Value = Format(productionDate, "yyyy.mm.dd")
+    wsTemplate.Range("E3").Value = productCode           ' 产品编号
+    wsTemplate.Range("C3").Value = productName           ' 产品名称
+    wsTemplate.Range("C4").Value = requirementQty        ' 成品需求量
+    wsTemplate.Range("I4").Value = Format(pickupDate, "yyyy.mm.dd")      ' 领料日期
+    wsTemplate.Range("E4").Value = Format(productionDate, "yyyy.mm.dd")  ' 生产日期
     
     ' 步骤3：清空BOM数据区域
     Call ClearBOMArea
     
     ' 步骤4：从生产记录明细表读取物料明细
-    Dim colDetailProductionBatch As Long, colDetailMaterialCode As Long, colDetailMaterialName As Long
-    Dim colDetailSpec As Long, colDetailRequirement As Long, colDetailScrap As Long
-    Dim colDetailInspection As Long, colDetailInbound As Long, detailLastRow As Long
+    Dim colDetailProductionBatch As Long
+    Dim colDetailMaterialCode As Long
+    Dim colDetailMaterialName As Long
+    Dim colDetailSpec As Long
+    Dim colDetailRequirement As Long
+    Dim colDetailPickup As Long
+    Dim colDetailScrap As Long
+    Dim colDetailInspection As Long
+    Dim colDetailInbound As Long
+    Dim colDetailWorkshopStock As Long
+    Dim detailLastRow As Long
     
     colDetailProductionBatch = GetColumnIndex(wsProductionDetail, 1, "生产批号")
     colDetailMaterialCode = GetColumnIndex(wsProductionDetail, 1, "物料编号")
     colDetailMaterialName = GetColumnIndex(wsProductionDetail, 1, "物料名称")
     colDetailSpec = GetColumnIndex(wsProductionDetail, 1, "规格")
     colDetailRequirement = GetColumnIndex(wsProductionDetail, 1, "需求量")
+    colDetailPickup = GetColumnIndex(wsProductionDetail, 1, "本次领用量")
     colDetailScrap = GetColumnIndex(wsProductionDetail, 1, "报废")
     colDetailInspection = GetColumnIndex(wsProductionDetail, 1, "抽检")
     colDetailInbound = GetColumnIndex(wsProductionDetail, 1, "入库")
+    
+    ' 尝试获取车间结存量列（如果存在）
+    On Error Resume Next
+    colDetailWorkshopStock = GetColumnIndex(wsProductionDetail, 1, "车间结存量")
+    On Error GoTo ErrorHandler
     
     If colDetailProductionBatch = 0 Or colDetailMaterialCode = 0 Then
         MsgBox "生产记录明细表缺少必需的列", vbCritical
@@ -1751,85 +1768,83 @@ Sub QueryProductionHistory()
     End If
     
     detailLastRow = wsProductionDetail.Cells(wsProductionDetail.Rows.Count, colDetailProductionBatch).End(xlUp).Row
-    currentRow = 6
+    currentRow = 6  ' 从第6行开始填写
     
+    ' 遍历生产记录明细表，查找匹配的生产批号
+    ' ?? 增加逻辑：确保每个物料编号在模板中只占一行
     Dim processedMaterials As Object
     Set processedMaterials = CreateObject("Scripting.Dictionary")
     
     For i = 2 To detailLastRow
-        Dim vDetailBatch As Variant
-        vDetailBatch = wsProductionDetail.Cells(i, colDetailProductionBatch).Value
-        
-        If Not IsError(vDetailBatch) Then
-            If Trim(CStr(vDetailBatch)) = productionBatch Then
-                Dim vMatCode As Variant
-                vMatCode = wsProductionDetail.Cells(i, colDetailMaterialCode).Value
+        If Trim(wsProductionDetail.Cells(i, colDetailProductionBatch).Value) = productionBatch Then
+            Dim materialCode As String
+            materialCode = Trim(wsProductionDetail.Cells(i, colDetailMaterialCode).Value)
+            
+            ' 如果该物料还没处理过，则添加到模板
+            If Not processedMaterials.Exists(materialCode) Then
+                processedMaterials.Add materialCode, True
                 
-                If Not IsError(vMatCode) Then
-                    Dim materialCode As String
-                    materialCode = Trim(CStr(vMatCode))
-                    
-                    If materialCode <> "" And Not processedMaterials.Exists(materialCode) Then
-                        processedMaterials.Add materialCode, True
-                        
-                        ' 读取其他物料属性
-                        Dim mName As String, mSpec As String, mReq As Double, mScrap As Double, mInsp As Double, mInbound As Double
-                        If colDetailMaterialName > 0 And Not IsError(wsProductionDetail.Cells(i, colDetailMaterialName).Value) Then mName = CStr(wsProductionDetail.Cells(i, colDetailMaterialName).Value)
-                        If colDetailSpec > 0 And Not IsError(wsProductionDetail.Cells(i, colDetailSpec).Value) Then mSpec = CStr(wsProductionDetail.Cells(i, colDetailSpec).Value)
-                        If colDetailRequirement > 0 And Not IsError(wsProductionDetail.Cells(i, colDetailRequirement).Value) Then mReq = Val(CStr(wsProductionDetail.Cells(i, colDetailRequirement).Value))
-                        If colDetailScrap > 0 And Not IsError(wsProductionDetail.Cells(i, colDetailScrap).Value) Then mScrap = Val(CStr(wsProductionDetail.Cells(i, colDetailScrap).Value))
-                        If colDetailInspection > 0 And Not IsError(wsProductionDetail.Cells(i, colDetailInspection).Value) Then mInsp = Val(CStr(wsProductionDetail.Cells(i, colDetailInspection).Value))
-                        If colDetailInbound > 0 And Not IsError(wsProductionDetail.Cells(i, colDetailInbound).Value) Then mInbound = Val(CStr(wsProductionDetail.Cells(i, colDetailInbound).Value))
-                        
-                        ' 填写模板
-                        wsTemplate.Cells(currentRow, "A").Value = currentRow - 5
-                        wsTemplate.Cells(currentRow, "B").Value = materialCode
-                        wsTemplate.Cells(currentRow, "C").Value = mName
-                        wsTemplate.Cells(currentRow, "D").Value = mSpec
-                        wsTemplate.Cells(currentRow, "E").Value = mReq
-                        wsTemplate.Cells(currentRow, "L").Value = mScrap
-                        wsTemplate.Cells(currentRow, "M").Value = mInbound
-                        wsTemplate.Cells(currentRow, "N").Value = mInsp
-                        
-                        ' 获取实时资料
-                        wsTemplate.Cells(currentRow, "G").Value = GetWorkshopStock(materialCode)
-                        wsTemplate.Cells(currentRow, "O").Value = GetWorkshopStock(materialCode)
-                        
-                        ' 补充单位和厂家
-                        Dim wsBOM As Worksheet: Set wsBOM = ThisWorkbook.Worksheets("BOM")
-                        Dim colB1 As Long, colB2 As Long, colB3 As Long, colB4 As Long, rB As Long, jB As Long
-                        colB1 = GetColumnIndex(wsBOM, 1, "产品编号"): colB2 = GetColumnIndex(wsBOM, 1, "物料编号")
-                        colB3 = GetColumnIndex(wsBOM, 1, "单位"): colB4 = GetColumnIndex(wsBOM, 1, "生产厂家")
-                        If colB1 > 0 And colB2 > 0 Then
-                            rB = wsBOM.Cells(wsBOM.Rows.Count, colB1).End(xlUp).Row
-                            For jB = 2 To rB
-                                If Trim(CStr(wsBOM.Cells(jB, colB1).Value)) = productCode And _
-                                   Trim(CStr(wsBOM.Cells(jB, colB2).Value)) = materialCode Then
-                                    If colB3 > 0 Then wsTemplate.Cells(currentRow, "F").Value = wsBOM.Cells(jB, colB3).Value
-                                    If colB4 > 0 Then wsTemplate.Cells(currentRow, "I").Value = wsBOM.Cells(jB, colB4).Value
-                                    Exit For
-                                End If
-                            Next jB
+                Dim materialName As String
+                Dim spec As String
+                Dim requirement As Double
+                Dim scrap As Double
+                Dim inspection As Double
+                Dim inbound As Double
+                Dim workshopStock As Double
+                Dim unit As String
+                Dim manufacturer As String
+                
+                If colDetailMaterialName > 0 Then materialName = Trim(wsProductionDetail.Cells(i, colDetailMaterialName).Value)
+                If colDetailSpec > 0 Then spec = Trim(wsProductionDetail.Cells(i, colDetailSpec).Value)
+                If colDetailRequirement > 0 Then requirement = Val(wsProductionDetail.Cells(i, colDetailRequirement).Value)
+                If colDetailScrap > 0 Then scrap = Val(wsProductionDetail.Cells(i, colDetailScrap).Value)
+                If colDetailInspection > 0 Then inspection = Val(wsProductionDetail.Cells(i, colDetailInspection).Value)
+                If colDetailInbound > 0 Then inbound = Val(wsProductionDetail.Cells(i, colDetailInbound).Value)
+                
+                ' 获取当前最新的车间结存
+                workshopStock = GetWorkshopStock(materialCode)
+                
+                ' 从BOM表获取单位和生产厂家（为了保持资料最新）
+                Dim wsBOM As Worksheet
+                Set wsBOM = ThisWorkbook.Worksheets("BOM")
+                Dim colBOMProductCode As Long, colBOMMaterialCode As Long, colBOMUnit As Long, colBOMManufacturer As Long
+                Dim bomLastRow As Long, j As Long
+                
+                colBOMProductCode = GetColumnIndex(wsBOM, 1, "产品编号")
+                colBOMMaterialCode = GetColumnIndex(wsBOM, 1, "物料编号")
+                colBOMUnit = GetColumnIndex(wsBOM, 1, "单位")
+                colBOMManufacturer = GetColumnIndex(wsBOM, 1, "生产厂家")
+                
+                If colBOMProductCode > 0 And colBOMMaterialCode > 0 Then
+                    bomLastRow = wsBOM.Cells(wsBOM.Rows.Count, colBOMProductCode).End(xlUp).Row
+                    For j = 2 To bomLastRow
+                        If Trim(wsBOM.Cells(j, colBOMProductCode).Value) = productCode And _
+                           Trim(wsBOM.Cells(j, colBOMMaterialCode).Value) = materialCode Then
+                            If colBOMUnit > 0 Then unit = Trim(wsBOM.Cells(j, colBOMUnit).Value)
+                            If colBOMManufacturer > 0 Then manufacturer = Trim(wsBOM.Cells(j, colBOMManufacturer).Value)
+                            Exit For
                         End If
-                        
-                        currentRow = currentRow + 1
-                    End If
+                    Next j
                 End If
+                
+                ' 写入到模板表
+                wsTemplate.Cells(currentRow, "A").Value = currentRow - 5    ' 序号
+                wsTemplate.Cells(currentRow, "B").Value = materialCode      ' 物料编号
+                wsTemplate.Cells(currentRow, "C").Value = materialName      ' 物料名称
+                wsTemplate.Cells(currentRow, "D").Value = spec              ' 规格
+                wsTemplate.Cells(currentRow, "E").Value = requirement       ' 需求量
+                wsTemplate.Cells(currentRow, "F").Value = unit              ' 单位
+                wsTemplate.Cells(currentRow, "G").Value = workshopStock     ' 车间结存量
+                wsTemplate.Cells(currentRow, "I").Value = manufacturer      ' 生产厂家
+                wsTemplate.Cells(currentRow, "L").Value = scrap             ' 报废
+                wsTemplate.Cells(currentRow, "M").Value = inbound           ' 入库
+                wsTemplate.Cells(currentRow, "N").Value = inspection        ' 抽检
+                wsTemplate.Cells(currentRow, "O").Value = workshopStock     ' 初始结存
+                
+                currentRow = currentRow + 1
             End If
         End If
     Next i
-    
-    ' 填充批号逻辑
-    Call FillBatchNumbersFromOutbound(productionBatch)
-    
-CleanUp:
-    Application.EnableEvents = True
-    Application.ScreenUpdating = True
-    Exit Sub
-ErrorHandler:
-    MsgBox "查询生产历史时发生错误: " & Err.Description, vbCritical
-    Resume CleanUp
-End Sub
     
     ' 步骤5：从出库表填充J列（批号）
     Call FillBatchNumbersFromOutbound(productionBatch)
@@ -1845,7 +1860,7 @@ CleanUp:
 End Sub
 
 ' ============================================
-' 🆕 从出库表填充J列批号
+' ?? 从出库表填充J列批号
 ' 参数：productionBatch - 生产批号
 ' 创建日期：2026-02-11
 ' ============================================
@@ -1900,14 +1915,8 @@ Sub FillBatchNumbersFromOutbound(productionBatch As String)
             
             ' 从出库表中查找该生产批号和该物料的所有批号和数量
             For j = 2 To outboundLastRow
-                Dim outBatchVal As Variant
-                Dim outMaterialVal As Variant
-                outBatchVal = wsOutbound.Cells(j, colOutProductionBatch).Value
-                outMaterialVal = wsOutbound.Cells(j, colOutMaterialCode).Value
-                
-                If Not IsError(outBatchVal) And Not IsError(outMaterialVal) Then
-                    If Trim(CStr(outBatchVal)) = productionBatch And _
-                       Trim(CStr(outMaterialVal)) = materialCode Then
+                If Trim(wsOutbound.Cells(j, colOutProductionBatch).Value) = productionBatch And _
+                   Trim(wsOutbound.Cells(j, colOutMaterialCode).Value) = materialCode Then
                     
                     ' 获取批号
                     Dim batchInfo As String
@@ -1954,7 +1963,7 @@ ErrorHandler:
 End Sub
 
 ' ============================================
-' 🆕 保存生产记录到生产记录表和生产记录明细表
+' ?? 保存生产记录到生产记录表和生产记录明细表
 ' 在计算批号按钮点击后调用
 ' 创建日期：2026-02-11
 ' ============================================
@@ -2150,7 +2159,7 @@ Sub SaveProductionRecord()
             inspection = Val(wsTemplate.Cells(i, "N").Value)
             workshopStock = Val(wsTemplate.Cells(i, "G").Value)
             
-            ' 🆕 处理多批号情况：拆分H列和J列
+            ' ?? 处理多批号情况：拆分H列和J列
             Dim pickupStr As String
             Dim batchStr As String
             Dim pickupArray() As String
@@ -2176,7 +2185,7 @@ Sub SaveProductionRecord()
                 batchCount = 1
             End If
             
-            ' 🆕 遍历每个批号，每个批号写入一条明细记录
+            ' ?? 遍历每个批号，每个批号写入一条明细记录
             For k = 0 To batchCount - 1
                 batchNumber = Trim(batchArray(k))
                 pickup = Val(Trim(pickupArray(k)))
@@ -2209,7 +2218,7 @@ End Sub
 
 
 ' ============================================
-' 🆕 保存生产记录到 "生产记录" 和 "生产记录明细" 表
+' ?? 保存生产记录到 "生产记录" 和 "生产记录明细" 表
 ' ============================================
 Sub SaveProductionRecords()
     On Error GoTo ErrorHandler
@@ -2365,3 +2374,5 @@ ErrorHandler:
     Application.ScreenUpdating = True
     MsgBox "保存生产记录时发生错误: " & Err.Description, vbCritical, "错误"
 End Sub
+
+
